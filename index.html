@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Universal Weather</title>
+  <meta name="description" content="Weather, simply. Search any city and see its current conditions.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="weather-partly" data-state="loading">
+
+  <!-- Icon sprite (minimalist line icons) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-sun" viewBox="0 0 24 24">
+        <circle class="sun" cx="12" cy="12" r="4"/>
+        <path class="sun" d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/>
+      </symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24">
+        <path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6z"/>
+      </symbol>
+      <symbol id="i-cloud" viewBox="0 0 24 24">
+        <path d="M6.5 18.5h10.5a4 4 0 0 0 .7-7.94a5.6 5.6 0 0 0-10.9 1.2a3.4 3.4 0 0 0-.3 6.74z"/>
+      </symbol>
+      <symbol id="i-partly-day" viewBox="0 0 24 24">
+        <circle class="sun" cx="8.6" cy="8.6" r="3.2"/>
+        <path class="sun" d="M8.6 1.8v1.6M1.8 8.6h1.6M3.8 3.8l1.1 1.1M13.4 3.8l-1.1 1.1M13.9 8.6h1.5"/>
+        <path transform="translate(6.2 7.6) scale(.7)" stroke-width="2.15" d="M6.5 18.5h10.5a4 4 0 0 0 .7-7.94a5.6 5.6 0 0 0-10.9 1.2a3.4 3.4 0 0 0-.3 6.74z"/>
+      </symbol>
+      <symbol id="i-partly-night" viewBox="0 0 24 24">
+        <path transform="translate(-.6 -.6) scale(.58)" stroke-width="2.6" d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6z"/>
+        <path transform="translate(6.2 7.6) scale(.7)" stroke-width="2.15" d="M6.5 18.5h10.5a4 4 0 0 0 .7-7.94a5.6 5.6 0 0 0-10.9 1.2a3.4 3.4 0 0 0-.3 6.74z"/>
+      </symbol>
+      <symbol id="i-rain" viewBox="0 0 24 24">
+        <path transform="translate(0 -3.6)" d="M6.5 18.5h10.5a4 4 0 0 0 .7-7.94a5.6 5.6 0 0 0-10.9 1.2a3.4 3.4 0 0 0-.3 6.74z"/>
+        <path d="M8.2 17.6l-1 2.9M12.4 17.6l-1 2.9M16.6 17.6l-1 2.9"/>
+      </symbol>
+      <symbol id="i-storm" viewBox="0 0 24 24">
+        <path transform="translate(0 -3.6)" d="M6.5 18.5h10.5a4 4 0 0 0 .7-7.94a5.6 5.6 0 0 0-10.9 1.2a3.4 3.4 0 0 0-.3 6.74z"/>
+        <path class="sun" d="M12.9 15.6l-2.7 3.6h3.5l-1.7 3.2"/>
+      </symbol>
+      <symbol id="i-snow" viewBox="0 0 24 24">
+        <path d="M12 2.8v18.4M4 7.4l16 9.2M4 16.6l16-9.2M9.6 4.6L12 6.8l2.4-2.2M9.6 19.4L12 17.2l2.4 2.2M4.6 10.4l3.2.2-.8-3.1M19.4 13.6l-3.2-.2.8 3.1M4.6 13.6l3.2-.2-.8 3.1M19.4 10.4l-3.2.2.8-3.1"/>
+      </symbol>
+      <symbol id="i-fog" viewBox="0 0 24 24">
+        <path transform="translate(0 -4.4)" d="M6.5 18.5h10.5a4 4 0 0 0 .7-7.94a5.6 5.6 0 0 0-10.9 1.2a3.4 3.4 0 0 0-.3 6.74z"/>
+        <path d="M5 17.6h14M8 20.8h8"/>
+      </symbol>
+      <symbol id="i-search" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="6.2"/><path d="M15.6 15.6L20 20"/>
+      </symbol>
+      <symbol id="i-locate" viewBox="0 0 24 24">
+        <path d="M20.2 3.8L4.4 10.4l6.5 2.4 2.4 6.5z"/>
+      </symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5"/><path d="M12 7.2V12l3.2 2"/>
+      </symbol>
+      <symbol id="i-drop" viewBox="0 0 24 24">
+        <path d="M12 3.5c3 3.6 5 6.3 5 9a5 5 0 0 1-10 0c0-2.7 2-5.4 5-9z"/>
+      </symbol>
+      <symbol id="i-bars" viewBox="0 0 24 24">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><path d="M8.2 16v-3.2M12 16V8M15.8 16v-5.2"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="./" aria-label="Universal Weather">
+        <span class="brand__mark"><svg class="icon" aria-hidden="true"><use href="#i-locate"/></svg></span>
+        <span class="brand__name">Universal Weather</span>
+        <span class="brand__tag">Weather, simply.</span>
+      </a>
+
+      <form class="search" id="search-form" role="search" autocomplete="off">
+        <label class="sr-only" for="search-input">Search for a city</label>
+        <svg class="icon search__icon" aria-hidden="true"><use href="#i-search"/></svg>
+        <input id="search-input" class="search__input" type="search" name="q"
+               placeholder="Search world location…" maxlength="80"
+               enterkeyhint="search" spellcheck="false" autocapitalize="words">
+        <button class="search__go" type="submit" aria-label="Search">↵</button>
+      </form>
+    </div>
+  </header>
+
+  <main class="canvas" id="app" aria-busy="true">
+
+    <div class="strip">
+      <p class="strip__status" id="status" role="status" aria-live="polite">
+        <span class="strip__dot" aria-hidden="true"></span>
+        <span id="status-text">Fetching conditions…</span>
+      </p>
+      <a class="strip__credit" href="https://open-meteo.com/" target="_blank" rel="noopener">Data · Open-Meteo</a>
+    </div>
+
+    <div class="hero">
+      <section class="hero__main" aria-labelledby="city">
+        <p class="hero__meta" id="meta">&nbsp;</p>
+        <h1 class="hero__city" id="city">—</h1>
+        <p class="hero__when" id="when">&nbsp;</p>
+
+        <div class="hero__reading">
+          <p class="temp" aria-label="Temperature">
+            <span class="temp__value" id="temp">--</span><span class="temp__deg" aria-hidden="true">°</span>
+          </p>
+          <div class="tile">
+            <svg class="icon tile__icon" aria-hidden="true"><use id="tile-icon" href="#i-cloud"/></svg>
+            <span class="tile__label" id="tile-label">&nbsp;</span>
+          </div>
+        </div>
+
+        <blockquote class="hero__quote" id="quote">&nbsp;</blockquote>
+      </section>
+
+      <aside class="panel" aria-labelledby="panel-title">
+        <div class="panel__head">
+          <h2 class="panel__title" id="panel-title">
+            <svg class="icon" aria-hidden="true"><use href="#i-bars"/></svg>
+            Current Conditions
+          </h2>
+          <span class="panel__pill" id="pill">Local</span>
+        </div>
+
+        <dl class="panel__grid">
+          <div class="cell">
+            <dt>Feels like</dt>
+            <dd id="feels">--</dd>
+            <p id="feels-note">&nbsp;</p>
+          </div>
+          <div class="cell">
+            <dt>Updated</dt>
+            <dd id="updated">--</dd>
+            <p>Local time, latest reading</p>
+          </div>
+          <div class="cell">
+            <dt>Today’s high</dt>
+            <dd id="high">--</dd>
+            <p>Warmest point today</p>
+          </div>
+          <div class="cell">
+            <dt>Today’s low</dt>
+            <dd id="low">--</dd>
+            <p>Coolest point today</p>
+          </div>
+        </dl>
+      </aside>
+    </div>
+
+    <section class="hours" aria-labelledby="hours-title">
+      <div class="hours__head">
+        <svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>
+        <h2 class="hours__title" id="hours-title">Today · Hourly Trajectory</h2>
+      </div>
+      <ol class="hours__track" id="hours"></ol>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
